@@ -1,7 +1,8 @@
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { FaSeedling, FaShoppingCart, FaBell, FaUsers, FaEnvelope, FaBars, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
+import Hero from "./Component/Hero";
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ export default function App() {
   });
 
   const [navOpen, setNavOpen] = useState(false);
+   const [activeSection, setActiveSection] = useState("home");
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,114 +37,112 @@ export default function App() {
 
   const navLinks = [
     { name: "Home", id: "home" },
-    { name: "What We Do?", id: "whatwedo" },
-    { name: "Who We Are?", id: "whoweare" },
+    { name: "What We Do", id: "whatwedo" },
+    { name: "Who We Are", id: "whoweare" },
     { name: "Features", id: "features" },
     { name: "Join Waitlist", id: "waitlist" },
   ];
+
 
   const handleScroll = (id) => {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
+      setActiveSection(id);
       setNavOpen(false);
     }
   };
 
+  // Update active section while scrolling
+  useEffect(() => {
+    const handleScrollSpy = () => {
+      const scrollY = window.scrollY;
+      let current = activeSection;
+
+      navLinks.forEach((link) => {
+        const section = document.getElementById(link.id);
+        if (section) {
+          const sectionTop = section.offsetTop - 120; // adjust offset
+          const sectionHeight = section.offsetHeight;
+          if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+            current = link.id;
+          }
+        }
+      });
+
+      setActiveSection(current);
+    };
+
+    window.addEventListener("scroll", handleScrollSpy);
+    return () => window.removeEventListener("scroll", handleScrollSpy);
+  }, []);
+
   return (
     <div className="font-sans text-gray-900 relative">
       {/* Navbar */}
-      <nav className="fixed w-full z-50 bg-white bg-opacity-90 backdrop-blur-md shadow-md">
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center h-20">
-          <div className="text-2xl font-bold text-green-700 tracking-wide">Bhuumi</div>
-          <div className="hidden md:flex gap-10 items-center">
+      <nav className="fixed w-full z-50 bg-white bg-opacity-90 backdrop-blur-md shadow-md transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center h-20">
+        <div
+          className="text-2xl font-bold text-green-700 tracking-wide cursor-pointer"
+          onClick={() => handleScroll("home")}
+        >
+          Bhuumi
+        </div>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex gap-10 items-center">
+          {navLinks.map((link, i) => (
+            <button
+              key={i}
+              onClick={() => handleScroll(link.id)}
+              className={`text-base font-medium transition-all duration-300 ${
+                activeSection === link.id
+                  ? "text-green-700 border-b-2 border-green-700 pb-1"
+                  : "text-gray-700 hover:text-green-700"
+              }`}
+            >
+              {link.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button onClick={() => setNavOpen(!navOpen)}>
+            {navOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {navOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="md:hidden bg-white shadow-lg"
+        >
+          <div className="flex flex-col items-center gap-6 py-6">
             {navLinks.map((link, i) => (
-              <button key={i} onClick={() => handleScroll(link.id)} className="text-gray-700 hover:text-green-700 transition-colors font-medium">
+              <button
+                key={i}
+                onClick={() => handleScroll(link.id)}
+                className={`text-lg font-medium transition-all duration-300 ${
+                  activeSection === link.id
+                    ? "text-green-700 font-semibold"
+                    : "text-gray-700 hover:text-green-700"
+                }`}
+              >
                 {link.name}
               </button>
             ))}
           </div>
-          <div className="md:hidden">
-            <button onClick={() => setNavOpen(!navOpen)}>
-              {navOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-            </button>
-          </div>
-        </div>
-        {navOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-white shadow-lg"
-          >
-            <div className="flex flex-col items-center gap-6 py-6">
-              {navLinks.map((link, i) => (
-                <button key={i} onClick={() => handleScroll(link.id)} className="text-gray-700 text-lg hover:text-green-700 transition-colors font-medium">
-                  {link.name}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </nav>
+        </motion.div>
+      )}
+    </nav>
 
       {/* Hero Section */}
-<section
-  id="home"
-  className="relative text-center py-52 px-4 overflow-hidden bg-cover bg-center bg-no-repeat"
-  style={{ backgroundImage: "url('https://images.stockcake.com/public/e/6/e/e6e4865c-08b7-4633-b428-f5658462485e_large/farmers-tending-crops-stockcake.jpg')" }}
->
-  <div className="absolute inset-0 bg-black opacity-30"></div>
-
-  {/* Animated blobs */}
-  <motion.div className="absolute top-10 left-10 w-24 h-24 bg-green-200 rounded-full opacity-30 blur-3xl" animate={{ y: [0, 20, 0], x: [0, 10, 0] }} transition={{ duration: 6, repeat: Infinity }} />
-  <motion.div className="absolute bottom-20 right-10 w-36 h-36 bg-green-300 rounded-full opacity-20 blur-3xl" animate={{ y: [0, -15, 0], x: [0, -10, 0] }} transition={{ duration: 7, repeat: Infinity }} />
-  <motion.div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-400 rounded-full opacity-25 blur-2xl" animate={{ y: [0, 25, 0], x: [0, 5, 0] }} transition={{ duration: 5, repeat: Infinity }} />
-
-  {/* Tagline */}
-  <motion.p
-    initial={{ y: -20, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 1 }}
-    className="text-white font-semibold text-lg md:text-xl mb-4"
-  >
-    The Future of Bhoomi is Bhuumi – Empowering Farmers, One Tap at a Time
-  </motion.p>
-
-  {/* Headline */}
-  <motion.h1
-    initial={{ y: -60, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 1 }}
-    className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight text-white"
-  >
-    Grow Smarter, Earn More with <span className="text-green-300">Bhuumi</span>
-  </motion.h1>
-
-  {/* Subhead */}
-  <motion.p
-    initial={{ y: 60, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 1, delay: 0.3 }}
-    className="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-white"
-  >
-    Join 150M smallholder farmers to boost yields 25%, cut losses 20%, and sell direct—all in Tamil, Hindi, and 10+ languages.
-  </motion.p>
-
-  {/* CTA Button */}
-  <motion.button
-    onClick={() => handleScroll("waitlist")}
-    className="inline-block mt-10 bg-linear-to-r from-green-700 to-green-500 text-white font-bold px-10 py-4 rounded-full shadow-lg"
-    whileHover={{ scale: 1.05, boxShadow: "0px 0px 25px rgba(34,197,94,0.6)" }}
-    whileTap={{ scale: 0.95 }}
-    animate={{ y: [0, -4, 0] }}
-    transition={{ y: { repeat: Infinity, duration: 2, ease: "easeInOut" } }}
-  >
-    Join the Waitlist
-  </motion.button>
-</section>
-
-
+<Hero />
       {/* What We Do */}
    <section id="whatwedo" className="py-24 px-4 bg-green-50 relative overflow-hidden">
   {/* Background blobs for dynamism */}
@@ -329,53 +330,113 @@ export default function App() {
 </section>
 
 {/* Call-to-Action Form */}
-<section id="waitlist" className="relative py-32 px-4 bg-linear-to-r from-green-700 to-green-500 overflow-hidden">
-  {/* Blobs */}
-  <motion.div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full opacity-10 blur-3xl" animate={{ x: [0, 20, 0], y: [0, 20, 0] }} transition={{ duration: 8, repeat: Infinity }} />
-  <motion.div className="absolute bottom-0 right-0 w-72 h-72 bg-white rounded-full opacity-10 blur-3xl" animate={{ x: [0, -20, 0], y: [0, -20, 0] }} transition={{ duration: 10, repeat: Infinity }} />
+<section className="relative flex justify-center items-center min-h-screen bg-[#fafaf8] px-4 py-20" id="waitlist">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-lg border border-gray-100"
+      >
+        {/* Header */}
+        <h2 className="text-center text-3xl md:text-4xl font-extrabold text-green-900 mb-2">
+          Be the First to Try Bhuumi
+        </h2>
+        <p className="text-center text-gray-600 mb-10">
+          Join our waitlist for beta access in Q1 2026
+        </p>
 
-  <motion.h2
-    initial={{ y: -40, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 0.8 }}
-    className="text-4xl md:text-5xl font-extrabold text-white text-center mb-12"
-  >
-    Be the first to try Bhuumi’s beta in Q1 2026!
-  </motion.h2>
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
+                First Name *
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="Enter your first name"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full border rounded-md px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Enter your last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full border rounded-md px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
+                required
+              />
+            </div>
+          </div>
 
-  <motion.form
-    className="max-w-3xl mx-auto bg-white p-12 rounded-3xl shadow-2xl relative z-10"
-    onSubmit={handleSubmit}
-    initial={{ scale: 0.9, opacity: 0 }}
-    animate={{ scale: 1, opacity: 1 }}
-    transition={{ duration: 0.8, delay: 0.3 }}
-  >
-    <div className="grid md:grid-cols-2 gap-4 mb-6">
-      <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First Name" className="p-4 border rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:outline-none transition-all duration-300" required />
-      <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last Name" className="p-4 border rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:outline-none transition-all duration-300" required />
-    </div>
-    <div className="grid md:grid-cols-2 gap-4 mb-6">
-      <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email ID" className="p-4 border rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:outline-none transition-all duration-300" required />
-      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" className="p-4 border rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:outline-none transition-all duration-300" required />
-    </div>
-    <div className="mb-8">
-      <label className="block mb-2 font-semibold">I am a:</label>
-      <select name="role" value={formData.role} onChange={handleChange} className="p-4 border rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:outline-none transition-all duration-300">
-        <option>Farmer</option>
-        <option>Distributor</option>
-        <option>Other</option>
-      </select>
-    </div>
-    <motion.button
-      type="submit"
-      className="w-full bg-linear-to-r from-green-700 to-green-500 text-white font-bold px-6 py-4 rounded-full shadow-lg hover:scale-105 hover:shadow-2xl transition-all duration-300"
-      whileHover={{ scale: 1.05, boxShadow: "0px 0px 30px rgba(255,255,255,0.5)" }}
-      whileTap={{ scale: 0.95 }}
-    >
-      Join Our Waitlist
-    </motion.button>
-  </motion.form>
-</section>
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-800 mb-1">
+              Email *
+            </label>
+            <input
+              type="email"
+              name="email"
+              placeholder="your.email@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full border rounded-md px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-800 mb-1">
+              Phone Number *
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              placeholder="10-digit number"
+              value={formData.phone}
+              onChange={handleChange}
+              className="w-full border rounded-md px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
+              required
+            />
+          </div>
+
+          <div className="mb-8">
+            <label className="block text-sm font-semibold text-gray-800 mb-1">
+              I am a *
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full border rounded-md px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
+            >
+              <option>Farmer</option>
+              <option>Distributor</option>
+              <option>Retailer</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <motion.button
+            type="submit"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full bg-green-800 text-white font-semibold py-3 rounded-md shadow hover:bg-green-900 transition-all"
+          >
+            Join Waitlist
+          </motion.button>
+        </form>
+      </motion.div>
+    </section>
+
 
 
       {/* Footer */}
