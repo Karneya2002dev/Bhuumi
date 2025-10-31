@@ -3,6 +3,8 @@ import React, { useState,useEffect } from "react";
 import { FaSeedling, FaShoppingCart, FaBell, FaUsers, FaEnvelope, FaBars, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Hero from "./Component/Hero";
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { SiX } from "react-icons/si"; 
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,7 @@ export default function App() {
 
   const [navOpen, setNavOpen] = useState(false);
    const [activeSection, setActiveSection] = useState("home");
+     const currentYear = new Date().getFullYear();
 
 
   const handleChange = (e) => {
@@ -440,14 +443,55 @@ export default function App() {
 
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white text-center py-8 relative">
-        <div className="flex justify-center gap-6 mb-4">
-          <a href="mailto:info@marqwon.com" className="hover:text-green-400 transition-colors">
-            <FaEnvelope size={24} />
-          </a>
+       <footer className="bg-gray-900 text-white py-12 px-6">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-8">
+        {/* Logo & Description */}
+        <div className="flex flex-col gap-4">
+          <h2 className="text-2xl font-bold">YourCompany</h2>
+          <p className="text-gray-400 max-w-xs">
+            Building innovative solutions that empower businesses and users worldwide.
+          </p>
+          <div className="flex gap-4 mt-2">
+            <Facebook className="w-5 h-5 hover:text-blue-500 cursor-pointer" />
+           <SiX className="w-5 h-5 hover:text-black cursor-pointer" /> 
+            <Instagram className="w-5 h-5 hover:text-pink-500 cursor-pointer" />
+            <Linkedin className="w-5 h-5 hover:text-blue-700 cursor-pointer" />
+          </div>
         </div>
-        © 2025 MarqWon Dynamics Pvt. Ltd. | Contact: info@marqwon.com
-      </footer>
+
+        {/* Navigation Links */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-semibold text-lg">Quick Links</h3>
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              {link.name}
+            </a>
+          ))}
+        </div>
+
+        {/* Contact Info */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-semibold text-lg">Contact Us</h3>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Mail className="w-4 h-4" /> contact@yourcompany.com
+          </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Phone className="w-4 h-4" /> +91 98765 43210
+          </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <MapPin className="w-4 h-4" /> 123 Main Street, City, India
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-10 text-center text-gray-500">
+        &copy; {currentYear} YourCompany. All rights reserved.
+      </div>
+    </footer>
     </div>
   );
 }

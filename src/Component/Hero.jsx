@@ -41,14 +41,13 @@ const Hero = () => {
             className="animate-fade-in"
             style={{ animationDelay: "0.4s", animationFillMode: "both" }}
           >
-            <Button
-              variant="hero"
-              size="lg"
-              onClick={scrollToWaitlist}
-              className="text-lg px-8 py-6 h-auto transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-            >
-              Join Our Waitlist <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+           <Button
+  onClick={scrollToWaitlist}
+  className="bg-[#3AB63D] text-white text-lg px-8 py-6 h-auto transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-[#32a735]"
+>
+  Join Our Waitlist <ArrowRight className="ml-2 w-5 h-5" />
+</Button>
+
           </div>
         </div>
       </div>
